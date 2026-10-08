@@ -20,6 +20,7 @@ import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { sendChat } from "./sendChat";
+import { DEMO_CHAT, DEMO_CHAT_FALLBACK } from "./demoData";
 
 const CHUNK_COLORS = {
   mitre_technique:       { bg: "#EDE9FE", color: "#5B21B6" },
@@ -38,7 +39,7 @@ const SUGGESTIONS = [
   "What immediate remediation steps are recommended?",
 ];
 
-export default function ChatPanel({ jobId, isDone }) {
+export default function ChatPanel({ jobId, isDone, demo }) {
   const [open, setOpen]         = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput]       = useState("");
@@ -63,7 +64,9 @@ export default function ChatPanel({ jobId, isDone }) {
     setMessages(prev => [...prev, { role: "user", text: q }]);
     setLoading(true);
     try {
-      const data = await sendChat(jobId, q);
+      const data = demo
+        ? await new Promise(r => setTimeout(() => r(DEMO_CHAT.find(c => c.match.test(q)) || DEMO_CHAT_FALLBACK), 900))
+        : await sendChat(jobId, q);
       setMessages(prev => [...prev, {
         role: "assistant",
         text: data.answer,
@@ -160,7 +163,7 @@ export default function ChatPanel({ jobId, isDone }) {
               padding: "2px 8px", borderRadius: 4,
               background: "#F5F3FF", color: "#5B21B6",
               textTransform: "uppercase", letterSpacing: "0.05em",
-            }}>Snowflake RAG</span>
+            }}>{demo ? "Demo · canned" : "Snowflake RAG"}</span>
           </div>
 
           {/* Messages */}
@@ -226,7 +229,7 @@ export default function ChatPanel({ jobId, isDone }) {
                               ul:     ({ children }) => <ul style={{ margin: "4px 0 8px", paddingLeft: 18, listStyleType: "disc" }}>{children}</ul>,
                               ol:     ({ children }) => <ol style={{ margin: "4px 0 8px", paddingLeft: 18 }}>{children}</ol>,
                               li:     ({ children }) => <li style={{ marginBottom: 3, lineHeight: 1.55 }}>{children}</li>,
-                              code:   ({ inline, children }) => inline
+                              code:   ({ className, children }) => !className && !String(children).includes("\n")
                                 ? <code style={{
                                     fontFamily: "'IBM Plex Mono', monospace", fontSize: 11,
                                     background: "#E7E5E4", color: "#1C1917",
@@ -358,7 +361,7 @@ export default function ChatPanel({ jobId, isDone }) {
               </button>
             </div>
             <div style={{ fontSize: 10, color: "#D6D3D1", marginTop: 5, textAlign: "center" }}>
-              Snowflake vector search · Claude
+              {demo ? "Demo answers from the recorded report" : "Snowflake vector search · Claude"}
             </div>
           </div>
         </div>

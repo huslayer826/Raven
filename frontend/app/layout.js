@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "MalwareScope — AI Threat Analysis",
-  description: "AI-native malware analysis platform",
+  title: "Raven — AI Malware Analysis",
+  description: "Multi-agent Claude pipeline for static malware analysis",
 };
 
 export default function RootLayout({ children }) {

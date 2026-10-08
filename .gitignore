@@ -44,3 +44,6 @@ malware-sandbox/
 malwarescope/
 raven_snowflake_integration/
 backend_fallback/
+
+# Live malware — only the password-protected zip in samples/ is committed
+*.malicious
